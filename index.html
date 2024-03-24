@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Meal Cart</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <style>
+    /* Add a gray background color and some padding to the footer */
+    footer {
+      background-color: #f2f2f2;
+      padding: 25px;
+    }
+
+    .carousel-inner img {
+      width: 100%; /* Set width to 100% */
+      min-height: 200px;
+    }
+
+    /* Hide the carousel text when the screen is less than 600 pixels wide */
+    @media (max-width: 600px) {
+      .carousel-caption {
+        display: none; 
+      }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>                        
+      </button>
+      <a class="navbar-brand" href="#">Meal Cart</a>
+    </div>
+    <div class="collapse navbar-collapse" id="myNavbar">
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="#">Home</a></li>
+        <li><a href="comidas.html">Comidas</a></li> <!-- Botón agregado para Comidas -->
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#" data-toggle="modal" data-target="#cartModal"><span class="glyphicon glyphicon-shopping-cart"></span> Cart</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="row">
+    <div class="col-sm-8">
+      <div id="mealDetails" class="well">
+        <h3>Meal Details</h3>
+        <div id="mealImage">
+          <img src="https://placehold.it/800x400?text=IMAGE" alt="Meal Image">
+        </div>
+        <div id="mealInfo">
+          <p><strong>Name:</strong> <span id="mealName">Meal Name</span></p>
+          <p><strong>Category:</strong> <span id="mealCategory">Meal Category</span></p>
+          <p><strong>Area:</strong> <span id="mealArea">Meal Area</span></p>
+          <p><strong>Instructions:</strong> <span id="mealInstructions">Meal Instructions</span></p>
+          <button id="addToCartBtn" class="btn btn-primary">Add to Cart</button>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-4">
+      <div id="cart" class="well">
+        <h3>Cart</h3>
+        <ul id="cartItems">
+          <!-- Cart items will be added dynamically here -->
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="container-fluid text-center">
+  <p>Footer Text</p>
+</footer>
+
+<script>
+  $(document).ready(function(){
+    // Function to fetch a random meal from the API
+    function fetchRandomMeal() {
+      $.ajax({
+        url: "https://www.themealdb.com/api/json/v1/1/random.php",
+        method: "GET",
+        success: function(data) {
+          var meal = data.meals[0];
+          $('#mealImage img').attr('src', meal.strMealThumb);
+          $('#mealName').text(meal.strMeal);
+          $('#mealCategory').text(meal.strCategory);
+          $('#mealArea').text(meal.strArea);
+          $('#mealInstructions').text(meal.strInstructions);
+        },
+        error: function(xhr, status, error) {
+          console.log("Error fetching meal: " + error);
+        }
+      });
+    }
+
+    // Fetch a random meal when the page loads
+    fetchRandomMeal();
+
+    // Event listener for Add to Cart button
+    $('#addToCartBtn').click(function() {
+      var itemName = $('#mealName').text();
+      $('#cartItems').append('<li>' + itemName + '</li>');
+    });
+  });
+</script>
+
+</body>
+</html>
