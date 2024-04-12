@@ -1,102 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Recetas de Comidas</title>
+  <title>Explorar Comidas</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
 <nav class="navbar navbar-inverse">
   <div class="container-fluid">
     <div class="navbar-header">
-      <a class="navbar-brand" href="#">Meal Cart</a>
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>                        
+      </button>
+      <a class="navbar-brand" href="#">Carrito de Compras</a>
     </div>
-    <ul class="nav navbar-nav">
-      <li><a href="index.html">Home</a></li>
-      <li class="active"><a href="#">Comidas</a></li>
-    </ul>
-    <ul class="nav navbar-nav navbar-right">
-      <li><a href="#" data-toggle="modal" data-target="#cartModal"><span class="glyphicon glyphicon-shopping-cart"></span> Cart</a></li>
-    </ul>
+    <div class="collapse navbar-collapse" id="myNavbar">
+      <ul class="nav navbar-nav">
+        <li><a href="index.html">Home</a></li>
+        <li class="active"><a href="carrito.html">Carrito</a></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+      </ul>
+    </div>
   </div>
 </nav>
 
-<div class="container">
-  <div class="row" id="mealList">
-    <!-- Meals will be added dynamically here -->
-  </div>
+<div class="container text-center">
+  <h1>Explorar Comidas</h1>
+  <div id="comidas" class="row"></div>
 </div>
 
-<!-- Modal -->
-<div class="modal fade" id="cartModal" role="dialog">
-  <div class="modal-dialog">
-    <!-- Modal content-->
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">Cart</h4>
-      </div>
-      <div class="modal-body">
-        <ul id="cartItemsModal">
-          <!-- Cart items will be added dynamically here -->
-        </ul>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<footer class="container-fluid text-center">
-  <p>Footer Text</p>
-</footer>
-
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script>
-  $(document).ready(function(){
-    // Function to fetch meals from the API and display them
-    function fetchMeals() {
-      $.ajax({
-        url: "https://www.themealdb.com/api/json/v1/1/search.php?f=a", // You can modify the API query as needed
-        method: "GET",
-        success: function(data) {
-          var meals = data.meals;
-          if (meals) {
-            meals.forEach(function(meal){
-              var mealHtml = '<div class="col-sm-4">' +
-                                '<div class="panel panel-default">' +
-                                  '<div class="panel-heading">' + meal.strMeal + '</div>' +
-                                  '<div class="panel-body">' +
-                                    '<img src="' + meal.strMealThumb + '" class="img-responsive" alt="Meal Image">' +
-                                  '</div>' +
-                                  '<div class="panel-footer">' +
-                                    '<button class="btn btn-primary btnAddToCart" data-meal="' + meal.strMeal + '">Add to Cart</button>' +
-                                  '</div>' +
-                                '</div>' +
-                              '</div>';
-              $('#mealList').append(mealHtml);
-            });
-          }
-        },
-        error: function(xhr, status, error) {
-          console.log("Error fetching meals: " + error);
-        }
-      });
-    }
-
-    // Fetch meals when the page loads
-    fetchMeals();
-
-    // Event listener for Add to Cart buttons
-    $(document).on('click', '.btnAddToCart', function() {
-      var itemName = $(this).data('meal');
-      $('#cartItemsModal').append('<li>' + itemName + '</li>');
-    });
-  });
-</script>
+<script src="scripts.js"></script>
 
 </body>
 </html>
