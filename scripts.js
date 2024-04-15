@@ -1,74 +1,38 @@
 $(document).ready(function() {
-// Obtener categorías disponibles desde la API
-function getCategorias() {
-  $.ajax({
-    url: 'https://www.themealdb.com/api/json/v1/1/categories.php',
-    method: 'GET',
-    success: function(response) {
-      mostrarCategorias(response.categories);
-    },
-    error: function(error) {
-      console.log(error);
-    }
-  });
-}
+  // Función para obtener y mostrar las comidas desde la API
+  function getComidas() {
+    $.ajax({
+      url: 'https://www.themealdb.com/api/json/v1/1/random.php',
+      method: 'GET',
+      success: function(response) {
+        mostrarComida(response.meals[0]);
+      },
+      error: function(error) {
+        console.log(error);
+      }
+    });
+  }
 
-// Mostrar botones de categorías
-function mostrarCategorias(categorias) {
-  var categoriasDiv = $('#categorias');
-  categoriasDiv.empty();
-  categorias.forEach(function(categoria) {
-    var html = `<button class="btn btn-primary categoria" data-categoria="${categoria.strCategory}">${categoria.strCategory}</button>`;
-    categoriasDiv.append(html);
-  });
-}
-
-// Obtener comidas por categoría desde la API
-function getComidasPorCategoria(categoria) {
-  $.ajax({
-    url: `https://www.themealdb.com/api/json/v1/1/filter.php?c=${categoria}`,
-    method: 'GET',
-    success: function(response) {
-      mostrarComidas(response.meals);
-    },
-    error: function(error) {
-      console.log(error);
-    }
-  });
-}
-
-// Función para mostrar las comidas en la página
-function mostrarComidas(comidas) {
+// Función para mostrar una comida en la página
+// Función para mostrar una comida en la página
+function mostrarComida(comida) {
   var comidasDiv = $('#comidas');
-  comidasDiv.empty();
-  comidas.forEach(function(comida) {
-    var html = `
-      <div class="col-sm-4">
-        <h2>${comida.strMeal}</h2>
-        <img src="${comida.strMealThumb}" class="img-responsive" style="width:100%" alt="Comida">
-        <p>${comida.strInstructions}</p>
-        <button class="btn btn-success agregar-carrito" data-nombre="${comida.strMeal}" data-ingredientes="${[comida.strIngredient1, comida.strIngredient2, comida.strIngredient3].filter(Boolean).join(', ')}">Agregar al Carrito</button>
-      </div>
-    `;
-    comidasDiv.append(html);
-  });
+  var html = `
+    <div class="col-sm-4">
+      <h2>${comida.strMeal}</h2>
+      <img src="${comida.strMealThumb}" class="img-responsive" style="width:100%" alt="Comida">
+      <p>${comida.strInstructions}</p>
+      <button class="btn btn-success agregar-carrito" data-nombre="${comida.strMeal}" data-ingredientes="${[comida.strIngredient1, comida.strIngredient2, comida.strIngredient3].filter(Boolean)}">Agregar al Carrito</button>
+    </div>
+  `;
+  comidasDiv.append(html);
 }
 
 // Manejar clic en el botón "Agregar al Carrito"
 $('#comidas').on('click', '.agregar-carrito', function() {
   var nombre = $(this).data('nombre');
-  var ingredientes = $(this).data('ingredientes').split(', '); // Convertir la cadena de ingredientes en un array
+  var ingredientes = $(this).data('ingredientes').split(','); // Convertir la lista de ingredientes en un array
   agregarAlCarrito(nombre, ingredientes);
-});
-
-// Cargar categorías al cargar la página
-getCategorias();
-
-
-// Manejar clic en el botón de categoría
-$('#categorias').on('click', '.categoria', function() {
-  var categoria = $(this).data('categoria');
-  getComidasPorCategoria(categoria);
 });
 
 
@@ -77,12 +41,11 @@ function agregarAlCarrito(nombre, ingredientes) {
   var carrito = JSON.parse(localStorage.getItem('carrito')) || [];
   var nuevaComida = {
     nombre: nombre,
-    ingredientes: ingredientes
+    ingredientes: ingredientes.filter(Boolean) // Filtrar ingredientes nulos
   };
   carrito.push(nuevaComida);
   localStorage.setItem('carrito', JSON.stringify(carrito));
   alert('Comida agregada al carrito');
-  window.location.href = 'carrito.html'; // Redirigir a carrito.html después de agregar al carrito
 }
   
   // Función para mostrar las comidas agregadas al carrito
