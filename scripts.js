@@ -14,7 +14,6 @@ $(document).ready(function() {
   }
 
 // Función para mostrar una comida en la página
-// Función para mostrar una comida en la página
 function mostrarComida(comida) {
   var comidasDiv = $('#comidas');
   var html = `

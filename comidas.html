@@ -7,7 +7,63 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="scripts.js"></script>
   <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Estilo para los botones de categoría */
+    .categoria-btn {
+      margin: 5px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 5px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    .categoria-btn:hover {
+      background-color: #0056b3;
+    }
+
+    /* Estilo para las tarjetas de comidas */
+    .comida-card {
+      margin-bottom: 20px;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      background-color: #f8f9fa;
+    }
+
+    .comida-card h2 {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    .comida-card img {
+      border-radius: 5px;
+      margin-bottom: 10px;
+    }
+
+    .comida-card p {
+      font-size: 16px;
+      margin-bottom: 15px;
+    }
+
+    .comida-card button {
+      font-size: 16px;
+      border-radius: 5px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      cursor: pointer;
+    }
+
+    .comida-card button:hover {
+      background-color: #218838;
+    }
+  </style>
 </head>
 <body>
 
@@ -35,11 +91,82 @@
 
 <div class="container text-center">
   <h1>Explorar Comidas</h1>
-  <div id="categorias"></div>
+  <div id="categorias" class="row"></div>
   <div id="comidas" class="row"></div>
 </div>
 
-<script src="scripts.js"></script>
+<script>
+  $(document).ready(function() {
+    // Obtener y mostrar las categorías de comidas
+    $.ajax({
+      url: 'https://www.themealdb.com/api/json/v1/1/categories.php',
+      method: 'GET',
+      success: function(response) {
+        var categoriasDiv = $('#categorias');
+        response.categories.forEach(function(categoria) {
+          var html = `
+            <button class="btn btn-primary categoria-btn" onclick="obtenerComidasPorCategoria('${categoria.strCategory}')">${categoria.strCategory}</button>
+          `;
+          categoriasDiv.append(html);
+        });
+      },
+      error: function(error) {
+        console.log(error);
+      }
+    });
+
+    // Función para obtener y mostrar las comidas por categoría
+    window.obtenerComidasPorCategoria = function(categoria) {
+      $.ajax({
+        url: `https://www.themealdb.com/api/json/v1/1/filter.php?c=${categoria}`,
+        method: 'GET',
+        success: function(response) {
+          var comidasDiv = $('#comidas');
+          comidasDiv.empty(); // Limpiar el contenido anterior
+
+          response.meals.forEach(function(comida) {
+            var html = `
+              <div class="col-sm-4">
+                <div class="comida-card">
+                  <h2>${comida.strMeal}</h2>
+                  <img src="${comida.strMealThumb}" class="img-responsive" style="width:100%" alt="Comida">
+                  <p>${comida.strInstructions}</p>
+                  <button onclick="agregarAlCarrito('${comida.idMeal}')" class="btn btn-success">Agregar al Carrito</button>
+                </div>
+              </div>
+            `;
+            comidasDiv.append(html);
+          });
+        },
+        error: function(error) {
+          console.log(error);
+        }
+      });
+    }
+
+    // Función para agregar una comida al carrito
+    window.agregarAlCarrito = function(idComida) {
+      $.ajax({
+        url: `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${idComida}`,
+        method: 'GET',
+        success: function(response) {
+          var carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+          var comida = response.meals[0];
+          var nuevaComida = {
+            nombre: comida.strMeal,
+            ingredientes: [comida.strIngredient1, comida.strIngredient2, comida.strIngredient3].filter(Boolean) // Filtrar ingredientes nulos
+          };
+          carrito.push(nuevaComida);
+          localStorage.setItem('carrito', JSON.stringify(carrito));
+          alert('Comida agregada al carrito');
+        },
+        error: function(error) {
+          console.log(error);
+        }
+      });
+    }
+  });
+</script>
 
 </body>
 </html>
